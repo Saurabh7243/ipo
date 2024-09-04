@@ -24,11 +24,11 @@ import { CronJobs } from './models/cronJobs';
 
 export const dataSource = new DataSource({
     type: 'mssql',
-    host: 'FSS-104', //FSS-104 //103.235.104.148
+    host: '103.235.104.148', //FSS-104 //103.235.104.148
     port: 1433,
-    username: 'sa', //sa //ipoapi
-    password: 'Fss@123', //Fss@123 /@08Disa88
-    database: 'IPO',//'IPO' //ipoapi_in_
+    username: 'ipoapi', //sa //ipoapi
+    password: '@08Disa88', //Fss@123 /@08Disa88
+    database: 'ipoapi_in_',//'IPO' //ipoapi_in_
     synchronize: false,
     migrationsRun: false,
     logging: false,
