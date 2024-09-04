@@ -1,0 +1,24 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "src/index.ts",
+        "use": "@vercel/node"
+      },
+      {
+        "src": "api/run-python.py",
+        "use": "@vercel/python"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/api/run-python",
+        "dest": "/api/run-python.py"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/src/index.ts"
+      }
+    ]
+  }
+  
