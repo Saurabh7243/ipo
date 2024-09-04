@@ -1,0 +1,324 @@
+<%- include('../navbar/sidebar') %>
+<%- include('../utils/enum.ejs') %>
+
+
+<body>
+  <style>
+    th,
+    td {
+      font-size: 16px;
+    }
+  </style>
+  
+  <script>             
+    function reload() {
+      window.location.reload();
+    }
+                 
+    function typeData() {
+      const exchangedType = parseInt(`<%= ipoDetailsQuery.Exchanged %>`);
+      const ipoType = parseInt(`<%= ipoDetailsQuery.Type %>`);
+      const exchangedEnum = ExchangedEnum[exchangedType];
+      const ipoTypeEnum = TypeEnum[ipoType];
+      const spanElement = document.getElementById("spanData");
+      if (ipoType == 1 && spanElement) {
+        spanElement.innerHTML = `(${ipoTypeEnum})`;
+      }
+      if(ipoType == 2 && spanElement) {
+        spanElement.innerHTML = `(SME ,${exchangedEnum})`;
+      }
+
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      typeData();
+    });
+
+  </script>
+
+  <!-- [ Main Content ] start -->
+  <section class="pcoded-main-container">
+    <div class="pcoded-wrapper">
+      <div class="pcoded-content">
+        <div class="pcoded-inner-content">
+          <div class="main-body">
+            <div class="page-wrapper">
+              <!-- [ breadcrumb ] start -->
+              <div class="page-header">
+                <div class="page-block">
+                  <div class="row align-items-center">
+                    <div class="col-md-12">
+                      
+                      <div class="page-header-title d-flex" style="margin-left: 25%;">
+                        <h1 class="m-b-10 d-flex "><%= comapnyName %></h1> &nbsp;&nbsp;
+                        <h2 id="spanData" style="margin-top: 2px;"></h2>                        
+                      </div>                      
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- [ breadcrumb ] end -->
+              <!-- [ Main Content ] start -->
+              <div class="col-xl-3 col-md-6">
+                <div class="card prod-p-card">
+                  <div class="card-body">
+                    <!-- CompanyLogo -->
+                    <img src="<%= imageUrl %>"  style="width: 150px;" alt="Avatar" />
+                  </div>
+                  <form id="logoUploadForm" action="/ipoDetail/uploadLogo" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="IpoId" value="<%= ipoDetailsQuery.IpoId %>">
+                    <input type="hidden" name="IpoDetailId" value="<%= ipoDetailsQuery.IpoDetail?.IpoDetailId %>">
+                    <input type="hidden" name="CompanyName" value="<%= comapnyName %>">
+                    <input type="hidden" name="DisplayName" value="<%= ipoDetailsQuery.DisplayName %>">
+                    <input type="file" name="logo" />
+                    <button type="submit">Upload Image</button>
+                  </form>
+                </div>
+              </div>
+
+              <button type="button" onclick="reload()" class="btn btn-primary">refresh</button>
+              <%- include('../forms/editIpo.ejs', { IpoData: ipoDetailsQuery }) %>
+              <div class="row">
+
+                <!-- [ Time Line ] start -->                
+                <%- include('./ipoSubscription.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ TimeLine  ] end -->
+
+                <!-- [ Time Line ] start -->                
+                <%- include('./gmpInvestor.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ TimeLine  ] end -->
+
+                <!-- [ Time Line ] start -->                
+                <%- include('./timeLine.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ TimeLine  ] end -->
+
+                <!-- [ Lot Size ] start -->                
+                <%- include('./lotSize.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ Lot size ] end -->
+
+                <!-- [ Details ] start -->
+
+                <%- include('./details.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+
+                <!-- [ Details ] end -->
+
+                <!-- [ Reservation ] start -->
+                <%- include('./reservation.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ Reservation ] end -->
+
+                <!-- [ FinancialInformation ] start -->
+                <%- include('./FinancialInformation.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ FinancialInformation ] end -->
+                 
+                <!-- [ About section ] start -->
+                <%- include('./aboutSection.ejs') %>
+                <!-- [ About section ] end -->
+
+                <!-- [ Strength section ] start -->
+                <%- include('./StrengthSection.ejs') %>
+                <!-- [ Strength section ] end -->
+
+                <!-- [ Risk section ] start -->
+                <%- include('./RiskSection.ejs') %>
+                <!-- [ Risk section ] end -->
+
+                <!-- [ Valuation (KPI) ] start -->
+                <%- include('./Valuation.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ Valuation (KPI) ] end -->
+
+                <!-- [ No Reservetion ] start -->
+                <%- include('./noReservetion.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ No Reservetion ] end -->
+
+                <!-- [ Objectives ] start -->
+                <%- include('./objectives.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ Objectives ] end -->
+                 
+                <!-- [ Company Address ] start -->
+                <%- include('./companyAddress.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ Company Address ] end -->
+
+                <!-- [ Prospectus ] start -->
+                <%- include('./prospectus.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ Prospectus ] end -->
+
+                <!-- [ Boa ] start -->
+                <%- include('./boa.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ Boa ] end -->
+
+                <!-- [ AnchorLink ] start -->
+                <%- include('./AnchorLink.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ AnchorLink ] END -->
+
+                <!-- [ PromoterHoldings ] start -->
+                <%- include('./PromoterHoldings.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ PromoterHoldings ] END -->
+
+                <!-- [ registrar ] start -->
+                <%- include('./registrar.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ registrar ] END -->
+
+                <!-- [ registrar ] start -->
+                <%- include('./leadManager.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ registrar ] END -->
+
+                <!-- [ registrar ] start -->
+                <%- include('./marketMaker.ejs', { ipoDetailsQuery: ipoDetailsQuery }) %>
+                <!-- [ registrar ] END -->
+
+              <!-- [ Main Content ] end -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- [ Main Content ] end -->
+
+  <%- include('../ui/loader.ejs') %>
+
+  <%- include('../ui/toaster.ejs') %>
+
+  <script>
+    const AnchorUpload = {
+      getQueryParam: function(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+      },
+  
+      isValidPDF: function(file) {
+          const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp'];
+          return allowedTypes.includes(file.type);
+      },
+  
+      checkFile: function(event) {
+        const fileInput = document.querySelector('input[name="logo"]');
+        const file = fileInput.files[0];
+  
+        if (!file) {
+          renderToast('Please select a file to upload.', 'error');
+          event.preventDefault();
+          return;
+        }
+  
+        if (!this.isValidPDF(file)) {
+          renderToast('Please upload a valid PDF file.', 'error');
+          event.preventDefault();
+          return;
+        }
+      },
+  
+      logoUploadStatus: async function() {
+        const loader = document.getElementById('loader');
+        loader.classList.remove('d-none');
+        const success = this.getQueryParam('success');
+        console.log(success);
+        try {
+          if (success === "true") {
+            renderToast('File saved successfully', 'success');
+            reloadFun();
+          } else if (success === "false") {
+            renderToast('File transfer failed', 'error');
+          }
+        } catch (error) {
+          renderToast('File transfer failed', 'error');
+          console.log(error);
+        } finally {
+          loader.classList.add('d-none');
+        }
+      },
+  
+      clearUrlParams: function() {
+        const url = window.location.href.split('?')[0];
+        window.history.replaceState({}, document.title, url);
+      },
+  
+      init: function() {
+        document.getElementById('logoUploadForm').addEventListener('submit', (event) => {
+          this.checkFile(event);
+          this.clearUrlParams();
+        });
+  
+        window.addEventListener('load', () => {
+          const successParam = this.getQueryParam('success');
+          if (successParam !== null) {
+            this.logoUploadStatus();
+            this.clearUrlParams();
+          }
+        });
+      }
+    };
+  
+    // Initialize the AnchorUpload functions
+    AnchorUpload.init();
+  </script>
+
+  <!-- <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+  
+    async function logoUploadStatus() {
+      const loader = document.getElementById('loader');
+      loader.classList.remove('d-none');
+      const success = getQueryParam('success');
+      console.log(success)
+      try {
+        if(success === "true") {
+          renderToast('file save successfuly', 'success');    
+          reloadFun();
+        } else if(success === "false") {
+          renderToast('file transfer failed', 'error');
+        }
+      } catch (error) {
+        renderToast('file transfer failed', 'error');
+        console.log(error);
+      } finally {
+        loader.classList.add('d-none');
+      }
+    }
+  
+    function clearUrlParams() {
+      const url = window.location.href.split('?')[0];
+      window.history.replaceState({}, document.title, url);
+    }
+
+    function checkFile() {
+      debugger
+      const fileInput = document.querySelector('input[name="logo"]');
+      const file = fileInput.files[0];
+
+      if(!file) {
+        renderToast('Please select a file to upload.', 'error');
+        event.preventDefault();
+        return;
+      }
+
+      if (!isValidImage(file)) {
+        renderToast('Please upload a valid image file (JPEG, PNG, GIF).', 'error');
+      event.preventDefault();
+      return;
+    }
+
+    }
+  
+    document.getElementById('imageUploadForm').addEventListener('submit', function() {
+      checkFile()
+      clearUrlParams();
+    });
+  
+    // Execute logoUploadStatus on page load if 'success' parameter is present
+    window.addEventListener('load', function() {
+      const successParam = getQueryParam('success');
+      if (successParam !== null) {
+        logoUploadStatus();
+        clearUrlParams()
+      }
+    });
+  
+  </script> -->
+  
+
+</body>

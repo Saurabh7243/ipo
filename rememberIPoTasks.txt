@@ -1,0 +1,15 @@
+t1 - logo - done
+
+2 - timeLine - edit - done
+
+3 - lotSize - edit - done
+
+4 
+
+Note - re thing for rhp and drhp links use links or upload pdfs
+
+
+Note: make a cron job for gmp that is run only once in day and chek must be investorId, and listing date must be less than current date.
+
+
+note add this Ipo Type in add ipo form

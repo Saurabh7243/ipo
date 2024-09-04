@@ -1,0 +1,111 @@
+<!-- [ Boa ] start -->
+<div class="col-md-6">
+    <div class="card">
+        <div class="card-header d-flex">
+            <h3>Boa</h3>
+
+        </div>
+        <div class="card-body table-border-style">
+            <div class="table-responsive">
+                <div class="card-body">
+                    <% if(boaImage) {%>
+                        <a href="<%= boaImage %>" target="_blank"> View Boa Image </a>
+                    <%} else {%>
+                        <span style="margin-left: 20px;">No boa image</span>
+                    <%} %>
+                </div>
+                <form id="boaUploadForm" action="/ipoDetail/uploadBoa"
+                    method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="IpoId"value="<%= ipoDetailsQuery.IpoId %>">
+                    <input type="hidden" name="IpoDetailId"value="<%= ipoDetailsQuery.IpoDetail?.IpoDetailId %>">
+                    <input type="hidden" name="CompanyName"value="<%= comapnyName %>">
+                    <input type="hidden" name="DisplayName" value="<%= ipoDetailsQuery.DisplayName %>">
+                    <input type="file" name="boa" />
+                    <button type="submit">Upload Image</button>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+<!-- [ Boa ] end -->
+
+<%- include('../ui/loader.ejs') %>
+<%- include('../ui/toaster.ejs') %>
+
+<script>
+  const AnchorUpload = {
+    getQueryParam: function(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    },
+
+    isValidPDF: function(file) {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp'];
+        return allowedTypes.includes(file.type);
+    },
+
+    checkFile: function(event) {
+      const fileInput = document.querySelector('input[name="boa"]');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        renderToast('Please select a file to upload.', 'error');
+        event.preventDefault();
+        return;
+      }
+
+      if (!this.isValidPDF(file)) {
+        renderToast('Please upload a valid PDF file.', 'error');
+        event.preventDefault();
+        return;
+      }
+    },
+
+    logoUploadStatus: async function() {
+      const loader = document.getElementById('loader');
+      loader.classList.remove('d-none');
+      const success = this.getQueryParam('success');
+      console.log(success);
+      try {
+        if (success === "true") {
+          renderToast('File saved successfully', 'success');
+          reloadFun();
+        } else if (success === "false") {
+          renderToast('File transfer failed', 'error');
+        }
+      } catch (error) {
+        renderToast('File transfer failed', 'error');
+        console.log(error);
+      } finally {
+        loader.classList.add('d-none');
+      }
+    },
+
+    clearUrlParams: function() {
+      const url = window.location.href.split('?')[0];
+      window.history.replaceState({}, document.title, url);
+    },
+
+    init: function() {
+      document.getElementById('boaUploadForm').addEventListener('submit', (event) => {
+        this.checkFile(event);
+        this.clearUrlParams();
+      });
+
+      window.addEventListener('load', () => {
+        const successParam = this.getQueryParam('success');
+        if (successParam !== null) {
+          this.logoUploadStatus();
+          this.clearUrlParams();
+        }
+      });
+    }
+  };
+
+  // Initialize the AnchorUpload functions
+  AnchorUpload.init();
+</script>
+

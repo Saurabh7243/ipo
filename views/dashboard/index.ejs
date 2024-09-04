@@ -1,0 +1,65 @@
+<%- include('../navbar/sidebar.ejs') %>
+<%- include('../utils/enum.ejs') %>
+<script src="/socket.io/socket.io.js"></script>
+
+<div class="pcoded-main-container">
+    <div class="pcoded-wrapper">
+      <div class="pcoded-content">
+        <div class="pcoded-inner-content">
+          <div class="main-body">
+            <div class="page-wrapper">
+              <div class="page-header">
+                <div class="page-block">
+                  <div class="row align-items-center">
+                    <div class="col-md-12">
+                      <div class="page-header-title">
+                        <h5 class="m-b-10">Ipo Listing</h5>
+                        <div style="margin-top: 5px; text-align: center;" class="d-flex">
+                          
+                          <div style="margin: 5px; font-size: medium;"><h6 class="d-flex">
+                            Cron Job Update: <span style="margin-left: 8px; margin-right: 8px; margin-top: 3px;" id="socketData"></span> </h6>
+                          </div>
+                          <div class="d-flex" style="margin-top: -2px;">
+                            <%- include('../utils/cronJobButton.ejs') %>
+                          </div>
+                        </div>
+
+                        <div style="margin-top: 5px; text-align: center;" class="d-flex">
+                          
+                          <div style="margin: 5px; font-size: medium;"><h6 class="d-flex">
+                            Cron GMP: </h6>
+                          </div>
+                          <div class="d-flex" style="margin-top: -2px;">
+                            <%- include('../utils/gmpCronJobButton.ejs') %>
+                          </div>
+                        </div>
+
+                        <div>
+                          
+                        </div>
+                      </div>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-12">
+                <%- include('./tabs.ejs', {getAll:getAllSME, mainBoard:getAllMainBoard}) %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+      const socket = io();
+
+      socket.on('updateData', (data) => {
+      document.getElementById('socketData').innerHTML = `        
+        <p>${data.timestamp}</p>
+      `;
+      });
+  </script>

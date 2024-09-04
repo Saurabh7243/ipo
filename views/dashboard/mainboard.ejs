@@ -1,0 +1,146 @@
+<%- include('../utils/enum.ejs') %>
+
+<div class="card-body table-border-style">
+
+  <!-- search start -->
+  <div class="row justify-content-center" style="margin-top: -30px; margin-bottom: 30px; margin-left: -35%;">
+    <div class="col-md-6">
+        <form method="GET" action="/ipo/getDashboard" class="form-inline">
+            <input type="text" class="form-control mr-2" style="width: 50%;" name="search" placeholder="Search by Company Name" value="<%= searchQuery || '' %>">
+            <input type="hidden" name="tab" value="mainboard">  <!-- Hidden field to keep the tab active -->
+            <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+    </div>
+</div>
+  <!-- search end -->
+
+  <div class="table-responsive">
+    <table class="table" id="ipoTable">
+      <thead>
+        <tr>
+          <th style="width: 50%;">Company Name</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Type</th>
+          <th>Exchanged</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="data-table-body">
+        <% getAllMainBoard.forEach(function(item, index) { %>          
+        <tr style="<%= item.rowStyle %>" data-index="<%= index %>" data-start-date="<%= item?.TimeLine?.StartDate %>" data-end-date="<%= item?.TimeLine?.EndDate %>" data-listing-date="<%= item?.TimeLine?.ListingDate %>">
+          <td><%= item?.CompanyName || 'N/A' %></td>
+          <td><%= item?.TimeLine?.StartDate || 'N/A' %></td>
+          <td><%= item?.TimeLine?.EndDate || 'N/A' %></td>
+          <td>
+            <script>
+              document.write(TypeEnum[<%= item.Type %>]);
+            </script>
+          </td>
+          <td>
+            <script>
+              document.write(ExchangedEnum[<%= item.Exchanged %>]);
+            </script>
+          </td>
+          <td class="d-flex align-items-center">
+            <form action="/ipoDetail/get/<%= item.IpoId %>" method="GET">
+              <button class="btn btn-link p-0">
+                <i class="fa fa-eye" style="border: none; color: blue; cursor: pointer;"></i>
+              </button>
+            </form>
+
+            <button type="button" class="btn btn-link p-0 delete-btn" data-id="<%= item.IpoId %>" data-toggle="modal" data-target="#deleteMainboardData">
+              <i class="fa fa-trash" style="border: none; color: blue; cursor: pointer;"></i>
+            </button>
+
+            <div>
+              <form action="/ipo/active/<%= item.IpoId %>" method="POST" id="form<%= item.IpoId %>">
+                <input type="hidden" name="IpoId" value="<%= item.IpoId %>">
+                <input type="hidden" name="IsActive" id="isActive<%= item.IpoId %>" value="<%= item.IsActive %>">
+                <div class="custom-control custom-switch">
+                  <input type="checkbox" class="custom-control-input" id="switch<%= item.IpoId %>" <%= item.IsActive ? 'checked' : '' %> onchange="updateAndSubmit('<%= item.IpoId %>')">
+                  <label class="custom-control-label" for="switch<%= item.IpoId %>">
+                    <%= item.IsActive ? 'Active' : 'Inactive' %>
+                  </label>
+                </div>
+              </form>
+            </div>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- table pagination -->
+<nav>
+  <ul class="pagination d-flex" id="pagination-controls">
+    <% if (currentPage > 1) { %>
+      <li class="page-item">
+        <a class="page-link" href="?page=<%= currentPage - 1 %>&tab=mainboard">Previous</a>
+      </li>
+    <% } %>
+
+    <% for (let i = 1; i <= totalMainBoardPages; i++) { %>
+      <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+        <a class="page-link" href="?page=<%= i %>&tab=mainboard"><%= i %></a>
+      </li>
+    <% } %>
+
+    <% if (currentPage < totalMainBoardPages) { %>
+      <li class="page-item">
+        <a class="page-link" href="?page=<%= currentPage + 1 %>&tab=mainboard">Next</a>
+      </li>
+    <% } %>
+  </ul>
+</nav>
+
+<!-- Delete confirmation modal -->
+<div class="modal fade" id="deleteMainboardData" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" action="/ipo/deleteSme">
+        <div class="modal-body">
+          Are you sure you want to delete this item?
+          <input type="hidden" name="deleteId" id="deleteMainBoard-id" value="">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- End delete confirmation modal -->
+
+<script>
+  document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const id = this.getAttribute('data-id');
+      document.getElementById('deleteMainBoard-id').value = id;
+    });
+  });
+</script>
+
+<script>
+  function updateAndSubmit(ipoId) {
+    
+    const checkbox = document.getElementById('switch' + ipoId);
+    const isActiveField = document.getElementById('isActive' + ipoId);
+
+    // Update the hidden field value based on the checkbox state
+    isActiveField.value = checkbox.checked ? 'true' : 'false';
+
+    // Submit the form
+    document.getElementById('form' + ipoId).submit();
+  }
+</script>

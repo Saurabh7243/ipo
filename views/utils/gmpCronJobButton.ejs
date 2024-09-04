@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cron Job Control</title>
+</head>
+<body>
+
+    <div class="d-flex">
+        <div id="cron-GMP-status" style="margin: 5px; font-size: medium;">Checking...</div>
+        <button id="cron-GMP-button" type="button" class="btn btn-primary btn-sm" onclick="toggleGMPCronJob()">Loading...</button>
+    </div>
+
+    <script>
+        async function fetchGMPCronJobStatus() {
+            debugger
+            try {
+                const response = await fetch('/job/statusGMP', {
+                    method:'POST'
+                });
+                const data = await response.json();                
+
+                document.getElementById('cron-GMP-status').innerText = data.cronGMPRunning ? "Running" : "Stopped";
+                document.getElementById('cron-GMP-button').innerText = data.cronGMPRunning ? "Stop Cron GMP" : "Start Cron GMP";
+                document.getElementById('cron-GMP-button').setAttribute('onclick', `toggleGMPCronJob('${data.cronGMPRunning ? "stop" : "start"}')`);
+            } catch (error) {
+                console.error('Error fetching cron job status:', error);
+                document.getElementById('cron-GMP-status').innerText = "Error";
+            }
+        };
+
+        async function toggleGMPCronJob(action) {     
+            debugger   
+            try {
+                const endpoint = action === 'start' ? '/job/startGMP' : '/job/stopGMP';
+                const response = await fetch(endpoint, { method: 'POST' });
+                const data = await response.json();
+
+                document.getElementById('cron-GMP-status').innerText = data.cronGMPRunning ? "Running" : "Stopped";
+                document.getElementById('cron-GMP-button').innerText = data.cronGMPRunning ? "Stop Cron GMP" : "Start Cron GMP";
+                document.getElementById('cron-GMP-button').setAttribute('onclick', `toggleGMPCronJob('${data.cronGMPRunning ? "stop" : "start"}')`);
+            } catch (error) {
+                console.error('Error toggling cron job:', error);
+            }
+        }
+
+        window.addEventListener('load', fetchGMPCronJobStatus);
+    </script>
+</body>
+</html>

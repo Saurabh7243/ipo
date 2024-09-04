@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPO Details</title>
+  <link href="../../public/froala/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+  <link href="../../public/froala/froala_style.min.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <script type="text/javascript" src="../../public/froala/froala_editor.pkgd.min.js"></script>
+  <script>
+    let froalaEditorInstance;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // Initialize Froala Editor once
+      froalaEditorInstance = new FroalaEditor('#aboutSection', {
+        toolbarInline: false,
+        charCounterCount: true,
+        pluginsEnabled: [
+          'align', 'charCounter', 'codeBeautifier', 'codeView', 'colors',
+          'draggable', 'emoticons', 'entities', 'file', 'fontFamily', 'fontSize',
+          'fullscreen', 'image', 'imageManager', 'inlineClass', 'inlineStyle',
+          'lineBreaker', 'link', 'lists', 'paragraphFormat', 'paragraphStyle',
+          'quote', 'save', 'table', 'url', 'video'
+        ]
+      });
+
+      // Handle modal show event to load content into Froala Editor
+      $('#ipoModal').on('show.bs.modal', function () {
+        const aboutContent = `<%- ipoDetailsQuery.IpoDetail?.About || '' %>`;
+        // Set the content to Froala Editor
+        if (froalaEditorInstance) {
+          froalaEditorInstance.html.set(aboutContent);  // Correct way to set content in Froala Editor
+        }
+      });
+    });
+
+    // Function to clear the content of the Froala Editor
+    function cancelEdit() {
+      if (froalaEditorInstance) {
+        froalaEditorInstance.html.set(''); // Clear the content in the editor
+      }
+    }
+
+    // Function to sync the About section with backend
+    async function syncAbout() {
+      const loader = document.getElementById('loader');
+      loader.classList.remove('d-none');
+      const ipoDetails = {
+        IpoId: '<%= ipoDetailsQuery.IpoId %>',
+        ChitorName: '<%= ipoDetailsQuery.ChitorName %>',
+        ChitorId: '<%= ipoDetailsQuery.ChitorId %>',
+      };
+
+      try {
+        const response = await fetch('/scraper/syncAbout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(ipoDetails),
+        });
+
+        const result = await response.json();
+        if (response.status === 200) {
+          renderToast('Sync successful', 'success');
+          reloadFun();
+        } else {
+          renderToast(result.error || 'Sync failed', 'error');
+          console.log(`Sync failed: ${result.error || 'Unknown error'}`);
+        }
+      } catch (error) {
+        renderToast('Sync failed', 'error');
+        console.log('Sync failed', error);
+      } finally {
+        loader.classList.add('d-none');
+      }
+    }
+  </script>
+
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header d-flex">
+        <h3>About</h3>
+        <% if (ipoDetailsQuery.isBeforeCutoffDate) { %>
+          <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#ipoModal" style="height: 1%; margin-left: 2%;">
+            Edit
+          </button>
+          <label class="ml-auto" style="font-size: x-large; margin-top: 1.2%;" onclick="syncAbout()">
+            <i class="fa fa-sync" style="border: none; color: blue; cursor: pointer;"></i>
+          </label>
+        <% } %>
+      </div>
+      <div class="card-body table-border-style">
+        <div class="table-responsive">
+          <%- ipoDetailsQuery.IpoDetail?.About ? ipoDetailsQuery.IpoDetail?.About : 'N/A' %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="ipoModal" tabindex="-1" role="dialog" aria-labelledby="ipoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ipoModalLabel">Add Data</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="/editor/editAboutSection" method="POST">
+            <input type="hidden" name="IpoId" value="<%= ipoDetailsQuery.IpoId %>">
+            <input type="hidden" name="IpoDetailId" value="<%= ipoDetailsQuery.IpoDetail?.IpoDetailId %>">
+            <!-- Froala Editor textarea -->
+            <textarea id="aboutSection" name="aboutSection"></textarea>
+            <div style="margin-top: 10px;">
+              <button type="submit">Submit</button>
+              <button type="button" onclick="cancelEdit()">Cancel</button>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

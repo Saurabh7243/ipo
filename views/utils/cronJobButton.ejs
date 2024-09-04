@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cron Job Control</title>
+</head>
+<body>
+
+    <div id="cron-status" style="margin: 5px; font-size: medium;">Checking...</div>
+    <button id="cron-button" type="button" class="btn btn-primary" style="height: 40px;" onclick="toggleCronJob()">Loading...</button>
+
+    <script>
+        async function fetchIpoCronJobStatus() {                    
+            try {
+                const response = await fetch('/job/status-cron', {
+                    method:'POST'
+                });
+                const data = await response.json();                
+
+                document.getElementById('cron-status').innerText = data.cronRunning ? "Running" : "Stopped";
+                document.getElementById('cron-button').innerText = data.cronRunning ? "Stop Cron Job" : "Start Cron Job";
+                document.getElementById('cron-button').setAttribute('onclick', `toggleCronJob('${data.cronRunning ? "stop" : "start"}')`);
+            } catch (error) {
+                console.error('Error fetching cron job status:', error);
+                document.getElementById('cron-status').innerText = "Error";
+            }
+        };
+
+        async function toggleCronJob(action) {                    
+            try {
+                const endpoint = action === 'start' ? '/job/start-cron' : '/job/stop-cron';
+                const response = await fetch(endpoint, { method: 'POST' });
+                const data = await response.json();
+
+                document.getElementById('cron-status').innerText = data.cronRunning ? "Running" : "Stopped";
+                document.getElementById('cron-button').innerText = data.cronRunning ? "Stop Cron Job" : "Start Cron Job";
+                document.getElementById('cron-button').setAttribute('onclick', `toggleCronJob('${data.cronRunning ? "stop" : "start"}')`);
+            } catch (error) {
+                console.error('Error toggling cron job:', error);
+            }
+        }
+
+        window.addEventListener('load', fetchIpoCronJobStatus);
+    </script>
+</body>
+</html>
