@@ -18,7 +18,7 @@ import { startCronJob } from './jobs/subscriptionJob';
 startGMpCronJob()
 startCronJob()
 
-const port = 3000
+const port = process.env.PORT || 10000
 
 
 const app: Express = express();

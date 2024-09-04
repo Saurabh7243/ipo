@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ipo-app:latest
+    ports:
+      - "3000:3000" # Maps the app port to the host
+    environment:
+      - DB_HOST=mssql # Points to the database service defined below
+      - DB_PORT=1433
+      - DB_USER=ipoapi
+      - DB_PASS=@08Disa88
+      - DB_NAME=ipoapi_in_
+    depends_on:
+      - mssql
+    volumes:
+      - .:/src
+      - /src/node_modules
+      
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=@08Disa88
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433" # Exposes the database port
+    volumes:
+      - mssql-data:/var/opt/mssql
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  mssql-data:
+
+networks:
+  app-network:

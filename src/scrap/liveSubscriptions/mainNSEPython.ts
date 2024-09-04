@@ -139,7 +139,7 @@ function parseData(data:any){
 export async function scrapeNSEMainPythonSubscriptionData(IpoId:any, Symbol:any) {
     iid = IpoId;
     const pythonScriptPath = path.join(__dirname, 'python/mainNSEPythonScript.py');
-    const pythonProcess = spawn('python', [pythonScriptPath, Symbol]);
+    const pythonProcess = spawn('python3', [pythonScriptPath, Symbol]);
     pythonProcess.stdout.on('data', (data) => {
   
       try {

@@ -19,10 +19,12 @@
 // export default new DbUtil();
 
 import { dataSource } from "../db";
-import cron from "node-cron";
 
 class DbUtil {
     private connectionInitialized: boolean = false;
+
+    // New property to hold the interval ID for keep-alive
+    private keepAliveInterval: NodeJS.Timeout | null = null;
 
     async getDefaultConnection() {
         if (!this.connectionInitialized) {
@@ -31,28 +33,64 @@ class DbUtil {
         return dataSource;
     }
 
+    // Initialize connection and start keep-alive checks
     async init() {
         console.log("Creating connection to database...");
         if (!dataSource.isInitialized) {
-            await dataSource.initialize();
+            try {
+                await dataSource.initialize();
+                this.connectionInitialized = true;
+                console.log("Database connection initialized");
+
+                // Start the keep-alive process after successful initialization
+                this.startKeepAlive();
+            } catch (error) {
+                console.error("Error initializing database connection:", error);
+                throw error;
+            }
         }
-        this.connectionInitialized = true;
-        console.log("Database connection initialized");
+    }
+
+    // Method to start the keep-alive interval
+    private startKeepAlive() {
+        // Clear any existing interval if present
+        if (this.keepAliveInterval) {
+            clearInterval(this.keepAliveInterval);
+        }
+
+        // Set an interval to run a simple query periodically to keep the connection alive
+        this.keepAliveInterval = setInterval(async () => {
+            try {
+                if (dataSource.isInitialized) {
+                    // Simple query to keep the connection alive
+                    await dataSource.query("SELECT 1");
+                    console.log("Keep-alive query executed");
+                }
+            } catch (error) {
+                console.error("Keep-alive query failed, reinitializing connection:", error);
+                await this.reinitializeConnection();
+            }
+        }, 30000); // Ping the database every 30 seconds
+    }
+
+    // Method to reinitialize the connection in case of failure
+    private async reinitializeConnection() {
+        this.connectionInitialized = false;
+        if (dataSource.isInitialized) {
+            await dataSource.destroy();
+        }
+        await this.init();
+    }
+
+    // Clean up method to stop the keep-alive interval when the app shuts down
+    stopKeepAlive() {
+        if (this.keepAliveInterval) {
+            clearInterval(this.keepAliveInterval);
+            this.keepAliveInterval = null;
+            console.log("Keep-alive stopped");
+        }
     }
 }
-
-// Create an instance of DbUtil
-// const dbUtil = new DbUtil();
-
-// // Schedule a cron job to ensure the database connection is initialized
-// cron.schedule('*/1 * * * *', async function() {
-//     try {
-//         await dbUtil.init(); // Initialize the database connection if not already done
-//         console.log('Background database service is running');
-//     } catch (error) {
-//         console.error("Error initializing the database connection:", error);
-//     }
-// });
 
 export default new DbUtil();
 

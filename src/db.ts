@@ -61,11 +61,15 @@ export const dataSource = new DataSource({
         trustServerCertificate: true,
     },
     pool: {
-        max: 10,
-        min: 0,
-        idleTimeoutMillis: 90000,
+        max: 20,
+        min: 5,
+        idleTimeoutMillis: 30000,
+        acquireTimeoutMillis: 60000,
     },
-   
+   extra: {
+    requestTimeout: 60000,
+    enableArithAbort: true,
+   }
 });
 
 

@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, OneToMany } from "typeorm";
-import * as bcrypt from 'bcrypt';
+// import * as bcrypt from 'bcrypt';
 import { AdminToken } from "./AdminToken";
 
 @Entity({ name: 'AdminLogins', synchronize: true })
@@ -33,11 +33,11 @@ export class AdminLogins {
   @OneToMany(() => AdminToken, (adminToken) => adminToken.AdminTokenId)
   AdminTokenId: AdminToken[]
 
-  @BeforeInsert()
-  async hashPassword() {
-    if(this.Password) {
-      const saltRounds = 10;
-      this.Password = await bcrypt.hash(this.Password, saltRounds)
-    }
-  }
+  // @BeforeInsert()
+  // async hashPassword() {
+  //   if(this.Password) {
+  //     const saltRounds = 10;
+  //     this.Password = await bcrypt.hash(this.Password, saltRounds)
+  //   }
+  // }
 }

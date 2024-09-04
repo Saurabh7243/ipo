@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import dbUtils from "../utils/db.utils";
 import { AdminLogins } from "../models/AdminLogin";
-import * as bcrypt from 'bcrypt';
+// import * as bcrypt from 'bcrypt';
 import Jwt from "jsonwebtoken";
 import { AdminToken } from "../models/AdminToken";
 
@@ -53,7 +53,7 @@ class AdminController {
                 return res.status(400).json({ message: "Member not exists" });
             }
 
-            const isPasswordValid = bcrypt.compareSync(password, member.Password);
+            const isPasswordValid = ""//bcrypt.compareSync(password, member.Password);
             if (!isPasswordValid) {
                 return res.status(401).json({ message: "Invalid password" });
             }
